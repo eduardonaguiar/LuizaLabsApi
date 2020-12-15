@@ -1,6 +1,7 @@
 using LuizaLabs.Api.Configuration;
 using LuizaLabs.Infra.CrossCutting.Identity.Models;
 using LuizaLabs.Infra.Data;
+using LuizaLabs.Infra.Data.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,9 +26,12 @@ namespace LuizaLabs.Api
             services.AddControllers();
             
             services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<LuizaLabsContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<EventStoreContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentitySetup(Configuration);

@@ -1,7 +1,8 @@
 ﻿using LuizaLabs.Domain.Models;
+using LuizaLabs.Infra.Data.Mapping;
 using Microsoft.EntityFrameworkCore;
 
-namespace LuizaLabs.Infra.Data
+namespace LuizaLabs.Infra.Data.Context
 {
     public class LuizaLabsContext : DbContext
     {

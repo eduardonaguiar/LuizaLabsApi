@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LuizaLabs.Infra.Data
+namespace LuizaLabs.Infra.Data.Mapping
 {
     public class CustomerMap : IEntityTypeConfiguration<Customer>
     {

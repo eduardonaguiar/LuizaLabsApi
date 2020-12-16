@@ -21,7 +21,10 @@ namespace LuizaLabs.Api
         {
             services.AddDatabaseConfiguration(Configuration);
 
-            services.AddControllers();
+            services
+                .AddControllers()
+                .AddNewtonsoftJson(options =>
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddIdentitySetup(Configuration);
 
@@ -33,12 +36,8 @@ namespace LuizaLabs.Api
 
             services.AddMediatR(typeof(Startup));
 
-            services.AddHttpConfiguration(Configuration);
+            services.AddHttpConfiguration(Configuration);            
 
-            services.AddAuthSetup(Configuration);
-
-            services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -51,6 +50,13 @@ namespace LuizaLabs.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

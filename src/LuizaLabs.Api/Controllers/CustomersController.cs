@@ -25,14 +25,14 @@ namespace LuizaLabs.Api.Controllers
 
 
         [HttpGet("customer")]
-        //[Authorize(Policy = "CanReadCustomerData")]
+        [Authorize]
         public async Task<IEnumerable<CustomerViewModel>> Get()
         {
             return await _customerAppService.GetAll();
         }
 
         [HttpGet]
-        //[Authorize(Policy = "CanReadCustomerData")]
+        [Authorize]
         [Route("customer/{id:guid}")]
         public IActionResult Get(Guid id)
         {
@@ -42,7 +42,7 @@ namespace LuizaLabs.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "CanWriteCustomerData")]        
+        [Authorize]        
         [Route("customer")]
         public async Task<IActionResult> Post([FromBody] CustomerViewModel customerViewModel)
         {
@@ -58,7 +58,7 @@ namespace LuizaLabs.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize(Policy = "CanWriteCustomerData")]
+        [Authorize]
         [Route("customer")]
         public async Task<IActionResult> Put([FromBody] CustomerViewModel customerViewModel)
         {
@@ -74,7 +74,7 @@ namespace LuizaLabs.Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Policy = "CanRemoveCustomerData")]
+        [Authorize]
         [Route("customer")]
         public async Task<IActionResult> Delete(Guid id)
         {

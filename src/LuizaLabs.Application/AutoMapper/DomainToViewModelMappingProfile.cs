@@ -9,6 +9,7 @@ namespace LuizaLabs.Application.AutoMapper
         public DomainToViewModelMappingProfile()
         {
             CreateMap<Customer, CustomerViewModel>();
+            CreateMap<Favorite, FavoriteViewModel>();
         }
     }
 }

@@ -3,6 +3,7 @@ using LuizaLabs.Application.ViewModels;
 using LuizaLabs.Domain.Core.Bus;
 using LuizaLabs.Domain.Core.Notifications;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,15 @@ namespace LuizaLabs.Api.Controllers
 
 
         [HttpGet("customer")]
+        [Authorize(Policy = "CanReadCustomerData")]
         public async Task<IEnumerable<CustomerViewModel>> Get()
         {
             return await _customerAppService.GetAll();
         }
 
-        [HttpGet("customer/{id:guid}")]
+        [HttpGet]
+        [Authorize(Policy = "CanReadCustomerData")]
+        [Route("customer/{id:guid}")]
         public IActionResult Get(Guid id)
         {
             var customerViewModel = _customerAppService.GetById(id);
@@ -37,8 +41,9 @@ namespace LuizaLabs.Api.Controllers
             return Response(customerViewModel);
         }
 
-
-        [HttpPost("customer")]
+        [HttpPost]
+        [Authorize(Policy = "CanWriteCustomerData")]        
+        [Route("customer")]
         public async Task<IActionResult> Post([FromBody] CustomerViewModel customerViewModel)
         {
             if (!ModelState.IsValid)
@@ -52,8 +57,9 @@ namespace LuizaLabs.Api.Controllers
             return Response(customerViewModel);
         }
 
-
-        [HttpPut("customer")]
+        [HttpPut]
+        [Authorize(Policy = "CanWriteCustomerData")]
+        [Route("customer")]
         public async Task<IActionResult> Put([FromBody] CustomerViewModel customerViewModel)
         {
             if (!ModelState.IsValid)
@@ -67,8 +73,9 @@ namespace LuizaLabs.Api.Controllers
             return Response(customerViewModel);
         }
 
-
-        [HttpDelete("customer")]
+        [HttpDelete]
+        [Authorize(Policy = "CanRemoveCustomerData")]
+        [Route("customer")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _customerAppService.Remove(id);

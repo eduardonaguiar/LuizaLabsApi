@@ -5,12 +5,12 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace LuizaLabs.Service
+namespace LuizaLabs.Domain.DomainService
 {
     public class ProductSearchService : IProductSearchService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _remoteServiceBaseUrl = "http://challenge-api.luizalabs.com/api/product/";
+        private readonly string _remoteServiceBaseUrl = "api/product/";
 
         public ProductSearchService(HttpClient httpClient)
         {
@@ -19,14 +19,20 @@ namespace LuizaLabs.Service
 
         public async Task<ProductServiceModel> GetProductByIdAsync(Guid id)
         {
-            string url = _remoteServiceBaseUrl + id;
+            try
+            {
+                string url = $"{_remoteServiceBaseUrl}{id}/";
 
-            var responseString = await _httpClient.GetStringAsync(url).ConfigureAwait(false);
+                var responseString = await _httpClient.GetStringAsync(url);
 
-            var product = JsonConvert.DeserializeObject<ProductServiceModel>(responseString);
+                var product = JsonConvert.DeserializeObject<ProductServiceModel>(responseString);
 
-            return product;
+                return product;
+
+            } catch(HttpRequestException)
+            {
+                return null;
+            }            
         }
-
     }
 }

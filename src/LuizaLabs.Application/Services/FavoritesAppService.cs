@@ -7,6 +7,7 @@ using LuizaLabs.Domain.Core.Bus;
 using LuizaLabs.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LuizaLabs.Application.Services
@@ -27,13 +28,13 @@ namespace LuizaLabs.Application.Services
 
         public async Task Add(AddProductViewModel addProductViewModel)
         {
-            var AddProductCommand = new AddProductCommand(addProductViewModel.CustomerId, addProductViewModel.ProductId);
+            var AddProductCommand = new AddProductCommand(addProductViewModel.ProductId, addProductViewModel.CustomerId);
             await _mediator.SendCommand(AddProductCommand);
         }
 
         public async Task<IEnumerable<FavoriteViewModel>> GetByCustomerId(Guid customerId)
         {
-            return _mapper.Map<IEnumerable<FavoriteViewModel>>(await _favoritesRepository.GetByCustomerId(customerId));
+            return _mapper.Map<IEnumerable<FavoriteViewModel>>(_favoritesRepository.GetAll().Where(x=>x.CustomerId == customerId).ToList());
         }
 
         public async Task Remove(Guid id)

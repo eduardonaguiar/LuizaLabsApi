@@ -23,7 +23,7 @@ namespace LuizaLabs.Api.Controllers
             _favoriteAppService = favoriteAppService;
         }
 
-        [HttpPost("add-product/{productid:guid}/{customerid:guid}")]
+        [HttpPost("add-product")]
         public async Task<IActionResult> Add([FromBody] AddProductViewModel addProductViewModel)
         {
             if (!ModelState.IsValid)
@@ -37,7 +37,7 @@ namespace LuizaLabs.Api.Controllers
             return Response(addProductViewModel);
         }
 
-        [HttpPost("remove-product/{productid:guid}/{customerid:guid}")]
+        [HttpDelete("remove-product")]
         public async Task<IActionResult> Remove([FromBody] RemoveProductViewModel removeProductViewModel)
         {
             await _favoriteAppService.Remove(removeProductViewModel.Id);                            

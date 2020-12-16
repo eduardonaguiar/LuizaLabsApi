@@ -1,8 +1,10 @@
 ﻿using LuizaLabs.Domain.Interfaces;
 using LuizaLabs.Domain.Models;
 using LuizaLabs.Infra.Data.Context;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LuizaLabs.Infra.Data.Repository
@@ -14,14 +16,17 @@ namespace LuizaLabs.Infra.Data.Repository
         {
 
         }
-        public Task<IEnumerable<Favorite>> GetByCustomerId(Guid id)
+        public async Task<IEnumerable<Favorite>> GetByCustomerId(Guid id)
         {
-            throw new NotImplementedException();
+            return await DbSet
+                .AsNoTracking()
+                .Where(x => x.CustomerId == id)
+                .ToListAsync();
         }
 
-        public Task<Favorite> GetByCustomerProduct(Guid customerId, Guid productId)
+        public async Task<Favorite> GetByCustomerProduct(Guid customerId, Guid productId)
         {
-            throw new NotImplementedException();
+            return await DbSet.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.ProductId == productId);
         }
     }
 }

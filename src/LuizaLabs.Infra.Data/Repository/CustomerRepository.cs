@@ -2,6 +2,7 @@
 using LuizaLabs.Domain.Models;
 using LuizaLabs.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace LuizaLabs.Infra.Data.Repository
@@ -16,7 +17,9 @@ namespace LuizaLabs.Infra.Data.Repository
 
         public Customer GetByEmail(string email)
         {
-            return DbSet.AsNoTracking().FirstOrDefault(c => c.Email == email);
+            return DbSet
+                .AsNoTracking()
+                .FirstOrDefault(c => c.Email == email);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace LuizaLabs.Domain.Commands.Favorites
     {
         private readonly IFavoritesRepository _favoritesRepository;
         private readonly IProductSearchService _productService;
-        private readonly IMediatorHandler Bus;
+        private readonly IMediatorHandler _bus;
 
         public FavoritesCommandHandler(ICustomerRepository customerRepository,
                       IUnitOfWork uow,
@@ -32,34 +32,43 @@ namespace LuizaLabs.Domain.Commands.Favorites
             _productService = productService;
             _favoritesRepository = favoritesRepository;
             _productService = productService;
+            _bus = bus; 
         }
 
         public async Task<bool> Handle(AddProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _productService.GetProductByIdAsync(request.ProductId);
-
-            if (product == null)
-            {                
-                await Bus.RaiseEvent(new DomainNotification(request.MessageType, "Produdo inesistente."));
-
-                return await Task.FromResult(false);
-            }
-            
-            var exists = await _favoritesRepository.GetByCustomerProduct(request.CustomerId, request.ProductId) != null;
-            if (exists)
-            {                
-                await Bus.RaiseEvent(new DomainNotification(request.MessageType, "Produdo já existe na lista de favoritos."));
-
-                return await Task.FromResult(false);
-            }
-
-            var favorite = new Models.Favorite(Guid.NewGuid(), request.CustomerId, request.ProductId, product.Price, product.Image, product.Title);
-
-            _favoritesRepository.Add(favorite);
-
-            if (Commit())
+            try
             {
-                await Bus.RaiseEvent(new AddProductEvent(favorite.CustomerId, favorite.ProductId, favorite.Price, favorite.Image, favorite.Title));
+                var product = await _productService.GetProductByIdAsync(request.ProductId);
+                if (product == null)
+                {
+                    await _bus.RaiseEvent(new DomainNotification(request.MessageType, "Produdo inexistente."));
+
+                    return await Task.FromResult(false);
+                }
+
+                var exists = await _favoritesRepository.GetByCustomerProduct(request.CustomerId, request.ProductId) != null;
+                if (exists)
+                {
+                    await _bus.RaiseEvent(new DomainNotification(request.MessageType, "Produdo já existe na lista de favoritos."));
+
+                    return await Task.FromResult(false);
+                }
+
+                var favorite = new Models.Favorite(Guid.NewGuid(), request.CustomerId, request.ProductId, product.Price, product.Image, product.Title);
+
+                _favoritesRepository.Add(favorite);
+
+                if (Commit())
+                {
+                    await _bus.RaiseEvent(new AddProductEvent(favorite.CustomerId, favorite.ProductId, favorite.Price, favorite.Image, favorite.Title));
+                }
+            }
+            catch (ApplicationException ex)
+            {
+                await _bus.RaiseEvent(new DomainNotification(request.MessageType, "Erro ao criar favorito. " + ex.Message));
+
+                return await Task.FromResult(false);
             }
 
             return await Task.FromResult(true);
@@ -72,7 +81,7 @@ namespace LuizaLabs.Domain.Commands.Favorites
             if (favorite == null)
             {                
 
-                await Bus.RaiseEvent(new DomainNotification(request.MessageType, "Favorito nao encontrado."));
+                await _bus.RaiseEvent(new DomainNotification(request.MessageType, "Favorito nao encontrado."));
 
                 return await Task.FromResult(false);
             }

@@ -8,7 +8,7 @@ namespace LuizaLabs.Application.Interfaces
 {
     public interface ICustomerAppService : IDisposable
     {
-        Task Add(CustomerViewModel customerViewModel);
+        Task Add(AddCustomerViewModel customerViewModel);
         Task<IEnumerable<CustomerViewModel>> GetAll();
         Task<CustomerViewModel> GetById(Guid id);
         Task Update(CustomerViewModel customerViewModel);

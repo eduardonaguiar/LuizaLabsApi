@@ -36,7 +36,7 @@ namespace LuizaLabs.Application.Services
             return _mapper.Map<CustomerViewModel>(_customerRepository.GetById(id));
         }
 
-        public async Task Add(CustomerViewModel customerViewModel)
+        public async Task Add(AddCustomerViewModel customerViewModel)
         {
             var registerCommand = _mapper.Map<AddNewCustomerCommand>(customerViewModel);
             await _mediator.SendCommand(registerCommand);

@@ -44,7 +44,7 @@ namespace LuizaLabs.Api.Controllers
         [HttpPost]
         [Authorize]        
         [Route("customer")]
-        public async Task<IActionResult> Post([FromBody] CustomerViewModel customerViewModel)
+        public async Task<IActionResult> Post([FromBody] AddCustomerViewModel customerViewModel)
         {
             if (!ModelState.IsValid)
             {

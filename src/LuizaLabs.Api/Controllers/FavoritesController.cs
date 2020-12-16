@@ -24,7 +24,7 @@ namespace LuizaLabs.Api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Policy = "CanWriteCustomerData")]
+        [Authorize]
         [Route("customer-favorite-add")]
         public async Task<IActionResult> Add([FromBody] AddProductViewModel addProductViewModel)
         {
@@ -40,17 +40,17 @@ namespace LuizaLabs.Api.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Policy = "CanRemoveCustomerData")]
+        [Authorize]
         [Route("customer-favorite-remove")]
         public async Task<IActionResult> Remove([FromBody] RemoveProductViewModel removeProductViewModel)
         {
-            await _favoriteAppService.Remove(removeProductViewModel.Id);                            
+            await _favoriteAppService.Remove(removeProductViewModel.Id);
 
             return Response();
         }
 
         [HttpGet]
-        //[Authorize(Policy = "CanReadCustomerData")]
+        [Authorize]
         [Route("customer-favorite-list/{customerId:guid}")]
         public async Task<IActionResult> Get(Guid customerId)
         {

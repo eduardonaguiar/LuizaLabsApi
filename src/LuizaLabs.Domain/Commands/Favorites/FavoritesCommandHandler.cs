@@ -1,5 +1,4 @@
-﻿using FluentValidation.Results;
-using LuizaLabs.Domain.Core.Bus;
+﻿using LuizaLabs.Domain.Core.Bus;
 using LuizaLabs.Domain.Core.CommandHandlers;
 using LuizaLabs.Domain.Core.Interfaces;
 using LuizaLabs.Domain.Core.Notifications;
@@ -87,6 +86,11 @@ namespace LuizaLabs.Domain.Commands.Favorites
             }
             
             _favoritesRepository.Remove(favorite.Id);
+
+            if (Commit())
+            {
+                await _bus.RaiseEvent(new RemoveProductEvent(favorite.CustomerId, favorite.ProductId));
+            }
 
 
             return await Task.FromResult(true);

@@ -25,14 +25,14 @@ namespace LuizaLabs.Api.Controllers
 
 
         [HttpGet("customer")]
-        [Authorize(Policy = "CanReadCustomerData")]
+        //[Authorize(Policy = "CanReadCustomerData")]
         public async Task<IEnumerable<CustomerViewModel>> Get()
         {
             return await _customerAppService.GetAll();
         }
 
         [HttpGet]
-        [Authorize(Policy = "CanReadCustomerData")]
+        //[Authorize(Policy = "CanReadCustomerData")]
         [Route("customer/{id:guid}")]
         public IActionResult Get(Guid id)
         {

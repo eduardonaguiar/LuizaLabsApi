@@ -34,7 +34,9 @@ namespace LuizaLabs.Application.Services
 
         public async Task<IEnumerable<FavoriteViewModel>> GetByCustomerId(Guid customerId)
         {
-            return _mapper.Map<IEnumerable<FavoriteViewModel>>(_favoritesRepository.GetAll().Where(x=>x.CustomerId == customerId).ToList());
+            var list = _favoritesRepository.GetAll().Where(x => x.CustomerId == customerId).ToList();
+
+            return _mapper.Map<IEnumerable<FavoriteViewModel>>(list);
         }
 
         public async Task Remove(Guid id)

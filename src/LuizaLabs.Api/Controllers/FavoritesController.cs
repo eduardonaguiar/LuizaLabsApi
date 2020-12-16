@@ -3,6 +3,7 @@ using LuizaLabs.Application.ViewModels;
 using LuizaLabs.Domain.Core.Bus;
 using LuizaLabs.Domain.Core.Notifications;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -13,8 +14,7 @@ namespace LuizaLabs.Api.Controllers
     {
         private readonly IFavoritesAppService _favoriteAppService;
 
-        public FavoritesController(
-            ICustomerAppService customerAppService,
+        public FavoritesController(            
             INotificationHandler<DomainNotification> notifications,
             IMediatorHandler mediator, 
             IFavoritesAppService 
@@ -23,7 +23,9 @@ namespace LuizaLabs.Api.Controllers
             _favoriteAppService = favoriteAppService;
         }
 
-        [HttpPost("add-product")]
+        [HttpPost]
+        //[Authorize(Policy = "CanWriteCustomerData")]
+        [Route("customer-favorite-add")]
         public async Task<IActionResult> Add([FromBody] AddProductViewModel addProductViewModel)
         {
             if (!ModelState.IsValid)
@@ -37,7 +39,9 @@ namespace LuizaLabs.Api.Controllers
             return Response(addProductViewModel);
         }
 
-        [HttpDelete("remove-product")]
+        [HttpDelete]
+        //[Authorize(Policy = "CanRemoveCustomerData")]
+        [Route("customer-favorite-remove")]
         public async Task<IActionResult> Remove([FromBody] RemoveProductViewModel removeProductViewModel)
         {
             await _favoriteAppService.Remove(removeProductViewModel.Id);                            
@@ -45,7 +49,9 @@ namespace LuizaLabs.Api.Controllers
             return Response();
         }
 
-        [HttpGet("customer-favorite-list/{customerId:guid}")]
+        [HttpGet]
+        //[Authorize(Policy = "CanReadCustomerData")]
+        [Route("customer-favorite-list/{customerId:guid}")]
         public async Task<IActionResult> Get(Guid customerId)
         {
             return Response(_favoriteAppService.GetByCustomerId(customerId));

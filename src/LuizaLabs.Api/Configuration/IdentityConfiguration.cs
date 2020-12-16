@@ -62,7 +62,7 @@ namespace LuizaLabs.Api.Configuration
 
             services.AddAuthorization(options =>
             {                
-                options.AddPolicy("CanReadCustomerData", policy => policy.Requirements.Add(new ClaimRequirement("Customers", "Write")));
+                //options.AddPolicy("CanReadCustomerData", policy => policy.Requirements.Add(new ClaimRequirement("Customers", "Read")));
                 options.AddPolicy("CanWriteCustomerData", policy => policy.Requirements.Add(new ClaimRequirement("Customers", "Write")));
                 options.AddPolicy("CanRemoveCustomerData", policy => policy.Requirements.Add(new ClaimRequirement("Customers", "Remove")));
             });

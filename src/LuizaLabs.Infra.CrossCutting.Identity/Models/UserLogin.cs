@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LuizaLabs.Infra.CrossCutting.Identity.Models
 {
     public class UserLogin
     {
-        [Required(ErrorMessage = "The {0} field is mandatory")]
-        [EmailAddress(ErrorMessage = "The field {0} is in an invalid format")]
+        [Required(ErrorMessage = "Campo requirido.")]
+        [EmailAddress(ErrorMessage = "O E-mail está em um formato inválido.")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "The {0} field is mandatory")]
-        [StringLength(100, ErrorMessage = "The {0} field must be between {2} and {1} characters", MinimumLength = 6)]
+        [Required(ErrorMessage = "Campo requirido.")]
+        [StringLength(100, ErrorMessage = "O {0} deve estar entre {2} e {1} caracteres", MinimumLength = 6)]
         public string Password { get; set; }
     }
 }

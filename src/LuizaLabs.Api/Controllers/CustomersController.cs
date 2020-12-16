@@ -1,109 +1,86 @@
-﻿using LuizaLabs.Domain.Models;
-using LuizaLabs.Infra.Data;
+﻿using LuizaLabs.Application.Interfaces;
+using LuizaLabs.Application.ViewModels;
+using LuizaLabs.Domain.Core.Bus;
+using LuizaLabs.Domain.Core.Notifications;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace LuizaLabs.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CustomersController : ControllerBase
+    public class CustomerController : ApiController
     {
-        private readonly LuizaLabsContext _context;
+        private readonly ICustomerAppService _customerAppService;
 
-        public CustomersController(LuizaLabsContext context)
+        public CustomerController(
+            ICustomerAppService customerAppService,
+            INotificationHandler<DomainNotification> notifications,
+            IMediatorHandler mediator) : base(notifications, mediator)
         {
-            _context = context;
+            _customerAppService = customerAppService;
         }
 
-        // GET: api/Customers
+
+        [HttpGet("customer")]
+        //[Authorize(Policy = "CanReadCustomerData")]
+        public async Task<IEnumerable<CustomerViewModel>> Get()
+        {
+            return await _customerAppService.GetAll();
+        }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        //[Authorize(Policy = "CanReadCustomerData")]
+        [Route("customer/{id:guid}")]
+        public IActionResult Get(Guid id)
         {
-            return await _context.Customers.ToListAsync();
+            var customerViewModel = _customerAppService.GetById(id);
+
+            return Response(customerViewModel);
         }
 
-        // GET: api/Customers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(Guid id)
-        {
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            return customer;
-        }
-
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(Guid id, Customer customer)
-        {
-            if (id != customer.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(customer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CustomerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Customers
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        [Authorize(Policy = "CanWriteCustomerData")]        
+        [Route("customer")]
+        public async Task<IActionResult> Post([FromBody] CustomerViewModel customerViewModel)
         {
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
-        }
-
-        // DELETE: api/Customers/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Customer>> DeleteCustomer(Guid id)
-        {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                NotifyModelStateErrors();
+                return Response(customerViewModel);
             }
 
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            await _customerAppService.Add(customerViewModel);
 
-            return customer;
+            return Response(customerViewModel);
         }
 
-        private bool CustomerExists(Guid id)
+        [HttpPut]
+        [Authorize(Policy = "CanWriteCustomerData")]
+        [Route("customer")]
+        public async Task<IActionResult> Put([FromBody] CustomerViewModel customerViewModel)
         {
-            return _context.Customers.Any(e => e.Id == id);
+            if (!ModelState.IsValid)
+            {
+                NotifyModelStateErrors();
+                return Response(customerViewModel);
+            }
+
+            await _customerAppService.Update(customerViewModel);
+
+            return Response(customerViewModel);
+        }
+
+        [HttpDelete]
+        [Authorize(Policy = "CanRemoveCustomerData")]
+        [Route("customer")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _customerAppService.Remove(id);
+
+            return Response();
         }
     }
 }
